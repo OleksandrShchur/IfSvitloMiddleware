@@ -1,83 +1,24 @@
 <!DOCTYPE html>
-<html lang="uk">
+<script>
+    const API_BASE = "https://be-svitlo.oe.if.ua/schedule-by-queue?queue=";
 
-<head>
-    <meta charset="UTF-8">
-    <title>Schedule</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background: #f5f5f5;
+    async function loadSchedule() {
+        const params = new URLSearchParams(window.location.search);
+        const queue = params.get("queue");
+
+        if (!queue) {
+            document.write(JSON.stringify({ error: "Queue not specified" }));
+            return;
         }
 
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        try {
+            const response = await fetch(API_BASE + encodeURIComponent(queue));
+            const data = await response.json();
+            document.write(JSON.stringify(data, null, 2));
+        } catch (err) {
+            document.write(JSON.stringify({ error: err.message }));
         }
+    }
 
-        .title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .error {
-            color: red;
-        }
-
-        .loading {
-            color: #666;
-        }
-    </style>
-</head>
-
-<body>
-
-    <div id="content" class="card">
-        <div class="loading">Loading...</div>
-    </div>
-
-    <script>
-        const API_BASE = "https://be-svitlo.oe.if.ua/schedule-by-queue?queue=";
-
-        function getQueueFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get("queue");
-        }
-
-        async function loadSchedule() {
-            const queue = getQueueFromUrl();
-            const container = document.getElementById("content");
-
-            if (!queue) {
-                container.textContent = JSON.stringify({ error: "Queue not specified" });
-                return;
-            }
-
-            try {
-                const requestUrl = API_BASE + encodeURIComponent(queue);
-                const response = await fetch(requestUrl);
-
-                if (!response.ok) {
-                    throw new Error("HTTP " + response.status);
-                }
-
-                const data = await response.json();
-                container.textContent = JSON.stringify(data, null, 2);
-            }
-            catch (err) {
-                container.textContent = JSON.stringify({ error: err.message });
-            }
-        }
-
-        loadSchedule();
-    </script>
-
-
-</body>
-
-</html>
+    loadSchedule();
+</script>
