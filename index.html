@@ -60,7 +60,6 @@
 
             try {
                 const requestUrl = API_BASE + encodeURIComponent(queue);
-                console.log(requestUrl);
                 const response = await fetch(requestUrl);
 
                 if (!response.ok) {
