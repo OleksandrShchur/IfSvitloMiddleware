@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Schedule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f5f5f5;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .loading {
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="content" class="card">
+        <div class="loading">Loading...</div>
+    </div>
+
+    <script>
+        const API_BASE = "https://if-svitlo.somee.com/api/schedule/";
+
+        function getQueueFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get("queue");
+        }
+
+        async function loadSchedule() {
+            const queue = getQueueFromUrl();
+            const container = document.getElementById("content");
+
+            if (!queue) {
+                container.innerHTML = "<div class='error'>Queue not specified</div>";
+                return;
+            }
+
+            try {
+                const response = await fetch(API_BASE + encodeURIComponent(queue));
+
+                if (!response.ok) {
+                    throw new Error("HTTP " + response.status);
+                }
+
+                const data = await response.json();
+
+                container.innerHTML = `
+                <div class="title">Queue ${data.queue}</div>
+                <div><strong>Today:</strong></div>
+                <pre>${JSON.stringify(data.today, null, 2)}</pre>
+                <div><strong>Tomorrow:</strong></div>
+                <pre>${JSON.stringify(data.tomorrow, null, 2)}</pre>
+            `;
+            }
+            catch (err) {
+                container.innerHTML = "<div class='error'>Failed to load: " + err.message + "</div>";
+            }
+        }
+
+        loadSchedule();
+    </script>
+
+</body>
+
+</html>
