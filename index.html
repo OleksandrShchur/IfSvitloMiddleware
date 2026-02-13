@@ -59,7 +59,9 @@
             }
 
             try {
-                const response = await fetch(API_BASE + encodeURIComponent(queue));
+                const requestUrl = API_BASE + encodeURIComponent(queue);
+                console.log(requestUrl);
+                const response = await fetch(requestUrl);
 
                 if (!response.ok) {
                     throw new Error("HTTP " + response.status);
