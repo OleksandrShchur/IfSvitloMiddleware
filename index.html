@@ -54,7 +54,7 @@
             const container = document.getElementById("content");
 
             if (!queue) {
-                container.innerHTML = "<div class='error'>Queue not specified</div>";
+                container.textContent = JSON.stringify({ error: "Queue not specified" });
                 return;
             }
 
@@ -67,22 +67,16 @@
                 }
 
                 const data = await response.json();
-
-                container.innerHTML = `
-                <div class="title">Queue ${data.queue}</div>
-                <div><strong>Today:</strong></div>
-                <pre>${JSON.stringify(data.today, null, 2)}</pre>
-                <div><strong>Tomorrow:</strong></div>
-                <pre>${JSON.stringify(data.tomorrow, null, 2)}</pre>
-            `;
+                container.textContent = JSON.stringify(data, null, 2);
             }
             catch (err) {
-                container.innerHTML = "<div class='error'>Failed to load: " + err.message + "</div>";
+                container.textContent = JSON.stringify({ error: err.message });
             }
         }
 
         loadSchedule();
     </script>
+
 
 </body>
 
